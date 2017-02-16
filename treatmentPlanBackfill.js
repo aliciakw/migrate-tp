@@ -18,10 +18,10 @@ function getUserGuid () {
       return '57a23807-ae1e-462c-a212-051272b6a0b1';
   }
 }
-var APP_NAME = ENV === 'DEV' ? 'dev' : MOYO_APP_NAME,
-    APP_PASSWORD = ENV === 'DEV' ? '' : MOYO_APP_PASSWORD,
+var APP_NAME = process.env.MOYO_APP_NAME || 'dev',
+    APP_PASSWORD = process.env.MOYO_APP_PASSWORD || '',
     auth = 'Basic ' + new Buffer(APP_NAME + ':' + APP_PASSWORD).toString('base64'),
-    MOYO_URL = ENV === 'DEV' ? 'http://moyo.quartethealth.local:3000' : MOYO_API_ENDPOINT,
+    MOYO_URL = process.env.MOYO_API_ENDPOINT || 'http://moyo.quartethealth.local:3000',
     QUERY_URL = MOYO_URL + '/query/v1',
     WRITE_URL = MOYO_URL + '/write',
     headers = {
