@@ -74,6 +74,17 @@ var patientsWithoutTPQuery = (drop) => ({
       {
       	"attribute":"treatmentPlan",
         "constraint": {"type": "missing"}
+      },
+      {
+      	"constraint": {
+      		"type": "backref",
+      		"model": "appointment",
+      		"attribute": "patient",
+      		"filters": [{
+      			"attribute": "consultNote",
+      			"constraint": { "type": "present"}
+      		}]
+      	}
       }
     ],
     "select": ["quartetId", "treatmentPlan", {
@@ -159,17 +170,20 @@ function searchApptsForConsult (serviceRequestId, patientId) {
     if (data && data.body) {
       try {
         var response = JSON.parse(data.body),
-            appointmentList = response.entities.length ? response.entities[0].appointment : [],
-            consultNoteList = appointmentList.map(appt => appt.consultNote);
+            appointmentList = response.entities.length ? response.entities[0].appointment : [];
+        if (appointmentList.length == 0 && isTest) { console.log(patientId + ' has appointments for most recent SR'); }
 
+        var consultNoteList = appointmentList.map(appt => appt.consultNote);
         consultNoteList.forEach(noteJSON => {
           try {
-            consultNote = JSON.parse(noteJSON) || {};
+            consultNote = JSON.parse(noteJSON);
             if (consultNote.diagnosis && consultNote.plan) {
               writeTreatmentPlan(patientId, {
                 diagnosis: consultNote.diagnosis,
                 plan: consultNote.plan
               });
+            } else if (isTest) {
+              console.log('Invalid consult note.')
             }
           } catch (err) {
             console.error('ERROR parsing consult note for SR', serviceRequestId, err);
@@ -199,15 +213,18 @@ function getPatients (drop = 0) {
     if (data && data.body) {
       response = JSON.parse(data.body);
       patients = response.entities;
+      if (drop === 0) {
+        console.log('found ' + response['total-count'] + ' patients to backfill');
+      }
+
       patients.forEach(patient => {
         var srList = sortReferralSRs(patient.serviceRequest);
         if (srList && srList.length) {
           var mostRecentSr = srList[0];
-          if (isTest) { console.log('|'); }
           // attempt to populate treatment plan from a consult note
           searchApptsForConsult(mostRecentSr.quartetId, patient.quartetId);
         } else {
-          if (isTest) { console.log('x'); }
+          if (isTest) { console.log(patient.quartetId + ' has no referral SRs.'); }
         }
 
 
