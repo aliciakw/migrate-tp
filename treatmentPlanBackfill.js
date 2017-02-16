@@ -3,7 +3,7 @@ var moment = require('moment');
 
 // settings
 var isTest = true,
-    ENV = 'DEV',
+    ENV = 'STAGE',
     take = 10,
     interval = 15000;
 
@@ -46,7 +46,7 @@ treatmentPlanWrite = (patientId, treatmentPlan) => ([{
 
 function writeTreatmentPlan (patientId, treatmentPlan) {
   if (isTest) {
-    console.log(patientId, treatmentPlan);
+    console.log('==> ' + treatmentPlan);
   } else {
     request({
       method: 'POST',
@@ -140,7 +140,7 @@ function sortReferralSRs (serviceRequests = []) {
           srList.push(sr);
         } else {
           createdAt = moment(sr.createdAt);
-          srList.forEach(sortedSr, index => {
+          srList.forEach((sortedSr, index) => {
             if (index === srList.length) {
               srList.push(sr);
             } else if (sortedSr.createdAt && createdAt.isBefore(moment(sortedSr.createdAt))) {
@@ -186,7 +186,7 @@ function searchApptsForConsult (serviceRequestId, patientId) {
               console.log('Invalid consult note.')
             }
           } catch (err) {
-            console.error('ERROR parsing consult note for SR', serviceRequestId, err);
+            console.error(err, consultNote, serviceRequestId );
           }
         });
 
@@ -201,7 +201,7 @@ function searchApptsForConsult (serviceRequestId, patientId) {
 /*  Run this for every patient without a treatmentPlan  */
 /*                                                      */
 function getPatients (drop = 0) {
-  console.log('Getting patients ' + drop + ' to ' + (drop + take) + '...');
+  console.log(drop + '.  Getting patients...');
   var patients, response;
 
   request({
