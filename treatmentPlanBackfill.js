@@ -45,18 +45,22 @@ treatmentPlanWrite = (patientId, treatmentPlan) => ([{
 }]);
 
 function writeTreatmentPlan (patientId, treatmentPlan) {
-  request({
-    method: 'POST',
-    url: WRITE_URL,
-    headers,
-    body: JSON.stringify(treatmentPlanWrite(patientId, treatmentPlan))
-  }, function (err, data) {
-    if (err) {
-      console.error('Error writing treatmentPlan for patient ' + patientId + ' : ' + err);
-    } else {
-      console.log('.');
-    }
-  });
+  if (isTest) {
+    console.log(patientId, treatmentPlan);
+  } else {
+    request({
+      method: 'POST',
+      url: WRITE_URL,
+      headers,
+      body: JSON.stringify(treatmentPlanWrite(patientId, treatmentPlan))
+    }, function (err, data) {
+      if (err) {
+        console.error('Error writing treatmentPlan for patient ' + patientId + ' : ' + err);
+      } else {
+        console.log('.');
+      }
+    });
+  }
 };
 
 // queries
@@ -221,5 +225,5 @@ function getPatients (drop = 0) {
   });
 }
 
-
-setTimeout(function () { getPatients() }, interval);
+console.log('Backfill Patient Treatment Plan from Consult Notes:');
+setTimeout(function () { getPatients() });
