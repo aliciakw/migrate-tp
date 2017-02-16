@@ -57,7 +57,7 @@ function writeTreatmentPlan (patientId, treatmentPlan) {
       if (err) {
         console.error('Error writing treatmentPlan for patient ' + patientId + ' : ' + err);
       } else {
-        console.log('.');
+        console.log(patientId, ' - ok.');
       }
     });
   }
