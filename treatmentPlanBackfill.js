@@ -18,9 +18,9 @@ function getUserGuid () {
       return '57a23807-ae1e-462c-a212-051272b6a0b1';
   }
 }
-var APP_NAME = process.env.MOYO_APP_NAME || 'dev',
-    APP_PASSWORD = process.env.MOYO_APP_PASSWORD || '',
-    auth = 'Basic ' + new Buffer(APP_NAME + ':' + APP_PASSWORD).toString('base64'),
+var AUTH_NAME = process.env.MOYO_AUTH_NAME || 'dev',
+    AUTH_PASSWORD = process.env.MOYO_AUTH_PASSWORD || '',
+    auth = 'Basic ' + new Buffer(AUTH_NAME + ':' + AUTH_PASSWORD).toString('base64'),
     MOYO_URL = process.env.MOYO_API_ENDPOINT || 'http://moyo.quartethealth.local:3000',
     QUERY_URL = MOYO_URL + '/query/v1',
     WRITE_URL = MOYO_URL + '/write',
@@ -203,6 +203,9 @@ function getPatients (drop = 0) {
         var srList = sortReferralSRs(patient.serviceRequest);
         if (srList && srList.length) {
           var mostRecentSr = srList[0];
+          if (isTest) {
+            console.log('patient:', patient.quartetId, mostRecentSr);
+          }
           // attempt to populate treatment plan from a consult note
           searchApptsForConsult(mostRecentSr.quartetId, patient.quartetId);
         }
