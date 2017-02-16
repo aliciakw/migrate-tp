@@ -46,7 +46,7 @@ treatmentPlanWrite = (patientId, treatmentPlan) => ([{
 
 function writeTreatmentPlan (patientId, treatmentPlan) {
   if (isTest) {
-    console.log('==> ' + treatmentPlan);
+    console.log('+  ', patientId, treatmentPlan);
   } else {
     request({
       method: 'POST',
@@ -173,7 +173,7 @@ function searchApptsForConsult (serviceRequestId, patientId) {
             appointmentList = response.entities.length ? response.entities[0].appointment : [];
         if (appointmentList.length == 0 && isTest) { console.log(patientId + ' has appointments for most recent SR'); }
 
-        var consultNoteList = appointmentList.map(appt => appt.consultNote);
+        var consultNoteList = appointmentList.map(appt => appt.consultNote).filter(note => note);
         consultNoteList.forEach(noteJSON => {
           try {
             consultNote = JSON.parse(noteJSON);
@@ -183,10 +183,10 @@ function searchApptsForConsult (serviceRequestId, patientId) {
                 plan: consultNote.plan
               });
             } else if (isTest) {
-              console.log('Invalid consult note.')
+              console.log('[DATA_ERROR] Invalid consult note.', serviceRequestId)
             }
           } catch (err) {
-            console.error(err, consultNote, serviceRequestId );
+            console.error('Invalid consult note: ', noteJSON);
           }
         });
 
