@@ -120,7 +120,7 @@ var apptsWithConsultQuery = (serviceRequestId) => ({
 });
 
 // helpers
-function sortReferralSRs (serviceRequests) {
+function sortReferralSRs (serviceRequests = []) {
   var srList = [], createdAt;
   serviceRequests.forEach(sr => {
     if (sr.isRequestingPatientReferral) {
@@ -203,11 +203,11 @@ function getPatients (drop = 0) {
         var srList = sortReferralSRs(patient.serviceRequest);
         if (srList && srList.length) {
           var mostRecentSr = srList[0];
-          if (isTest) {
-            console.log('patient:', patient.quartetId, mostRecentSr);
-          }
+          if (isTest) { console.log('|'); }
           // attempt to populate treatment plan from a consult note
           searchApptsForConsult(mostRecentSr.quartetId, patient.quartetId);
+        } else {
+          if (isTest) { console.log('x'); }
         }
 
 
